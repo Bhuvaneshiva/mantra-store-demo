@@ -3,8 +3,12 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { register } from "@/services/auth";
+import { signIn } from "next-auth/client";
+import { useRouter } from "next/router";
 
 function AuthForm() {
+    const router = useRouter();
+
     const [isLogin, setIsLogin] = useState(true);
 
     const [username, setUsername] = useState("");
@@ -25,6 +29,21 @@ function AuthForm() {
                 alert(username + " registered successfully");
                 setIsLogin(true);
                 return;
+            }
+
+            // login
+            if (isLogin) {
+                const result = await signIn("credentials", {
+                    redirect: false,
+                    email,
+                    password,
+                });
+
+                if (result && result.error === null) {
+                    router.push("/products");
+                } else {
+                    alert("Login failed");
+                }
             }
         } catch (error) {
             alert((error as Error).message);
