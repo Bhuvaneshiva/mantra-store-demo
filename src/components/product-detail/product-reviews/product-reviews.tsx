@@ -8,6 +8,7 @@ import {
     ListItemAvatar,
     Typography,
 } from "@mui/material";
+import { useRouter } from "next/router";
 
 type Props = {
     // productId: string | undefined;
@@ -15,13 +16,31 @@ type Props = {
 };
 
 const ProductReviews = ({ reviews }: Props) => {
+    const router = useRouter();
+    const _id = router.query._id as string[];
+
     if (!reviews || (reviews.length && reviews.length === 0)) {
         return <p>No reviews yet. Be the first one to add a review!</p>;
     }
 
+    const navigateToAddReview = () => {
+        // replace() does not maintain current page in browser history, push() does
+        router.push(`/products/${_id[0]}/addreview`);
+    };
+
     return (
         <div>
             <h2>Reviews</h2>
+            {/* <Link href={`/products/${productId}/add-review`}>Add a review</Link> */}
+
+            <Button
+                variant="contained"
+                sx={{ my: 3 }}
+                onClick={navigateToAddReview}
+            >
+                Add Review
+            </Button>
+
             <List>
                 {reviews.map((review) => (
                     <ListItem key={review._id} sx={{ my: 3 }}>
