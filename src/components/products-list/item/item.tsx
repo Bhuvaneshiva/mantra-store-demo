@@ -12,7 +12,7 @@ import Link from "@/components/link/link";
 
 import { IProduct } from "@/types/product";
 
-// import classes from "./item.module.scss";
+import classes from "./item.module.scss";
 
 type Props = {
     product: IProduct;
@@ -31,8 +31,14 @@ const getBgColor = (category: IProduct["category"]) => {
 
 const ProductListItem = ({ product }: Props) => {
     return (
-        <Card sx={{ alignItems: "stretch", minWidth: "100%" }}>
-            <div style={{ backgroundColor: getBgColor(product.category) }}>
+        <Card
+            sx={{ alignItems: "stretch", minWidth: "100%" }}
+            className={classes.category__container}
+        >
+            <div
+                style={{ backgroundColor: getBgColor(product.category) }}
+                className={classes.category}
+            >
                 {product.category}
             </div>
             <CardMedia
