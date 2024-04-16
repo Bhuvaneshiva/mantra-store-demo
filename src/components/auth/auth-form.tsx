@@ -2,6 +2,7 @@ import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import { register } from "@/services/auth";
 
 function AuthForm() {
     const [isLogin, setIsLogin] = useState(true);
@@ -14,10 +15,26 @@ function AuthForm() {
         setIsLogin((prevState) => !prevState);
     }
 
+    async function submitHandler(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        try {
+            // registration
+            if (!isLogin) {
+                await register({ email, username, password });
+                alert(username + " registered successfully");
+                setIsLogin(true);
+                return;
+            }
+        } catch (error) {
+            alert((error as Error).message);
+        }
+    }
+
     return (
         <section>
             <h1>{isLogin ? "Login" : "Sign Up"}</h1>
-            <form>
+            <form onSubmit={submitHandler}>
                 {!isLogin && (
                     <Box sx={{ my: 2 }}>
                         <TextField
