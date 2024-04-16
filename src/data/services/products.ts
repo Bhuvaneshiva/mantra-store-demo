@@ -28,3 +28,23 @@ export const getProducts = async (page: number = 1) => {
         products: mappedProducts,
     };
 };
+
+export const getProductById = async (_id: string) => {
+    const product = await Product.findById(_id);
+    const serializedProductReviews = product.reviews.map((review: any) => {
+        return {
+            ...review.toJSON({ flattenObjectIds: true }),
+            date: review.date.toString(),
+        };
+    });
+
+    return {
+        ...product.toJSON({ flattenObjectIds: true }),
+        reviews: serializedProductReviews,
+    };
+};
+
+export const getProductsIds = async () => {
+    const products = await Product.find().select("_id");
+    return products.map((p) => p._id.toString());
+};
