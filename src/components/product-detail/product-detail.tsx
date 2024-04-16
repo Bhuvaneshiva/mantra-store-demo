@@ -7,12 +7,33 @@ import Box from "@mui/material/Box";
 import { Typography } from "@mui/material";
 import Rating from "@mui/material/Rating";
 
+import ProductReviews from "./product-reviews/product-reviews";
+import AddReview from "./add-review/add-review";
+
 type Props = {
     productId: string | undefined;
     product: IProduct;
 };
 
 const ProductDetail = ({ productId, product }: Props) => {
+    const router = useRouter();
+
+    const _idRouter = router.query._id as string[];
+
+    if (!_idRouter) {
+        return <div>Loading...</div>;
+    }
+
+    let el;
+
+    if (_idRouter[1] === undefined) {
+        el = <ProductReviews reviews={product.reviews} />;
+    } else if (_idRouter[1] !== "addreview") {
+        el = <div>Something went wrong</div>;
+    } else {
+        el = <AddReview />;
+    }
+
     return (
         <div>
             <Paper elevation={3}>
@@ -50,6 +71,8 @@ const ProductDetail = ({ productId, product }: Props) => {
                     </Grid>
                 </Grid>
             </Paper>
+
+            <Box sx={{ mt: 3 }}>{el}</Box>
         </div>
     );
 };

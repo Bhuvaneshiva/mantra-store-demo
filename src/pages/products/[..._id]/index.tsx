@@ -22,23 +22,23 @@ const ProductDetailPage = ({ _id, product }: Props) => {
     );
 };
 
+// type of _id is string[] because of the "catch all" dynamic route [..._id]
 export const getStaticProps = async (
-    context: GetStaticPropsContext<{ _id: string }>
+    context: GetStaticPropsContext<{ _id: string[] }>
 ) => {
     const { params } = context;
-    const _id = params?._id as string;
+    const _id = params?._id as string[]; // an array of strings
 
     return {
         props: {
             _id: _id,
-            product: await getProductById(_id),
+            product: await getProductById(_id[0]), // extract the first param which is the product id
         },
-        revalidate: 60, // ISG - regenerated every 60 seconds
+        revalidate: 60,
     };
 };
 
 // ...component code, getStaticProps() code
-
 
 // {
 //     paths : {
@@ -48,12 +48,15 @@ export const getStaticProps = async (
 
 //     }
 // }
+// fallback: false -> if the product id does not exist in this returned paths, it will return 404 (such a product does not exist)
+// fallback: true -> if the product id does not exist in this returned paths, it will still try to render the page
 export const getStaticPaths = async () => {
     const _ids = await getProductsIds();
     return {
         paths: _ids.map((_id) => {
             return {
-                params: { _id: _id },
+                // returns an array of paths with params
+                params: { _id: [_id] },
             };
         }),
         fallback: true,
