@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 // run the model files to generate the model
 import "./models/Product";
+import "./models/User";
 
 export const connect = async () => {
     const connectionStr =
