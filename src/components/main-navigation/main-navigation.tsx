@@ -9,10 +9,44 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
+import Tooltip from "@mui/material/Tooltip";
+import Avatar from "@mui/material/Avatar";
 import Link from "@/components/link/link";
+import { useSession } from "next-auth/client";
+import { useRouter } from "next/router";
+
+// menu items for authenticated and unauthenticated users
+const authenticatedUserMenu = [
+    {
+        href: "/profile",
+        text: "Profile",
+    },
+    {
+        href: "/logout",
+        text: "Logout",
+    },
+];
+
+const unauthenticatedUserMenu = [
+    {
+        href: "/auth",
+        text: "Login/Register",
+    },
+];
 
 function ResponsiveAppBar() {
+    // check if the user is authenticated
+    const [session, loading] = useSession();
+
+    // get the router object for programmatic navigation
+    const router = useRouter();
+
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+        null
+    );
+
+    // Right menu state (similar to left menu_
+    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
         null
     );
 
@@ -20,8 +54,23 @@ function ResponsiveAppBar() {
         setAnchorElNav(event.currentTarget);
     };
 
+    // Right menu logic to run on opening (similar to left menu)
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
+    };
+
+    // Right menu logic to run on closing (similar to left menu)
+    // If href is provided, navigate to the href
+    const handleCloseUserMenu = (href?: string) => {
+        if (!href) {
+            return setAnchorElUser(null);
+        }
+
+        router.push(href);
     };
 
     return (
@@ -165,6 +214,67 @@ function ResponsiveAppBar() {
                                 Add a Product
                             </Link>
                         </Button>
+                    </Box>
+
+                    {/* right menu */}
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Tooltip title="Open settings">
+                            <IconButton
+                                onClick={handleOpenUserMenu}
+                                sx={{ p: 0 }}
+                            >
+                                <Avatar
+                                    alt={(
+                                        session?.user?.email || ""
+                                    ).toUpperCase()}
+                                    src="/static/images/avatar/2.jpg"
+                                />
+                            </IconButton>
+                        </Tooltip>
+                        <Menu
+                            sx={{ mt: "45px" }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={() => handleCloseUserMenu()}
+                        >
+                            {!session &&
+                                unauthenticatedUserMenu.map((item) => (
+                                    <MenuItem
+                                        key={item.text}
+                                        onClick={() =>
+                                            handleCloseUserMenu(item.href)
+                                        }
+                                    >
+                                        <Typography textAlign="center">
+                                            {item.text}
+                                        </Typography>
+                                    </MenuItem>
+                                ))}
+                            {session &&
+                                !loading &&
+                                authenticatedUserMenu.map((item) => (
+                                    <MenuItem
+                                        key={item.text}
+                                        onClick={() =>
+                                            handleCloseUserMenu(item.href)
+                                        }
+                                    >
+                                        <Typography textAlign="center">
+                                            {item.text}
+                                        </Typography>
+                                    </MenuItem>
+                                ))}
+                        </Menu>
                     </Box>
                 </Toolbar>
             </Container>
